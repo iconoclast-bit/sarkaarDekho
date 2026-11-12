@@ -1,0 +1,14 @@
+{
+  "name": "sarkardekho",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SarkarDekho: compare India's parties before you vote. Static site, no server code.",
+  "engines": { "node": ">=20" },
+  "scripts": { "build": "node build.mjs" },
+  "devDependencies": {
+    "@fontsource/hind": "5.3.0",
+    "@fontsource/mukta": "5.3.0",
+    "esbuild": "0.28.2"
+  }
+}

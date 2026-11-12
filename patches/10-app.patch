@@ -1,0 +1,156 @@
+# app.js: safer escaping and links, lookup tables without a prototype, an error boundary around every render,
+# and a hook that lets other modules add search results.
+
+@@ app.js
+<<<<
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+====
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+>>>>
+
+@@ app.js
+<<<<
+const link=(u,t)=>`<a href="${u}" target="_blank" rel="noopener">${esc(t)}</a>`;
+====
+/* Only https links leave the site; anything else is neutralised. */
+const safeUrl=u=>{u=String(u||"");return u.indexOf("https://")===0?esc(u):"#"};
+const link=(u,t)=>`<a href="${safeUrl(u)}" target="_blank" rel="noopener noreferrer">${esc(t)}</a>`;
+>>>>
+
+@@ app.js
+<<<<
+const ISS=Object.fromEntries(ISSUES.map(i=>[i.id,i]));
+const MS=Object.fromEntries(M.map(m=>[m.id,m]));
+====
+/* Lookup tables are keyed by ids that can arrive in a link or from saved data. They have no prototype,
+   so a word like "constructor" can never match a built-in property and crash a page. */
+const dict=o=>Object.assign(Object.create(null),o);
+[T,ST].forEach(o=>Object.setPrototypeOf(o,null));
+const ISS=dict(Object.fromEntries(ISSUES.map(i=>[i.id,i])));
+const MS=dict(Object.fromEntries(M.map(m=>[m.id,m])));
+>>>>
+
+@@ app.js
+<<<<
+const ORDER=["upa","nda","upa1","upa2","nda1","nda2","nda3"];
+====
+Object.setPrototypeOf(ITEMS,null);
+const ORDER=["upa","nda","upa1","upa2","nda1","nda2","nda3"];
+>>>>
+
+@@ app.js
+<<<<
+ loading="lazy" decoding="async" onerror="this.remove()">`:"";
+====
+ loading="lazy" decoding="async">`:"";
+>>>>
+
+# Party symbols and portraits are served from this site. The build downloads each original from Wikimedia
+# Commons and keeps it only if it matches the fingerprint pinned in build.mjs, so a changed upstream file can
+# never appear here unreviewed. The name carries the first 12 characters of that fingerprint.
+@@ app.js
+<<<<
+src:WM+"d/d7/Hand_INC.svg/250px-Hand_INC.svg.png"
+====
+src:"/assets/img/inc-symbol.4da8471427d8.svg"
+>>>>
+
+@@ app.js
+<<<<
+src:WM+"2/23/BJP_Election_Symbol.svg/250px-BJP_Election_Symbol.svg.png"
+====
+src:"/assets/img/bjp-symbol.fa3564ba054a.svg"
+>>>>
+
+@@ app.js
+<<<<
+src:WM+"a/af/Prime_Minister_Manmohan_Singh_official_portrait.jpg/250px-Prime_Minister_Manmohan_Singh_official_portrait.jpg"
+====
+src:"/assets/img/manmohan-singh.4436c50bf491.jpg"
+>>>>
+
+@@ app.js
+<<<<
+src:WM+"1/1a/Official_Photograph_of_Prime_Minister_Narendra_Modi_Portrait_%28crop%29.png/250px-Official_Photograph_of_Prime_Minister_Narendra_Modi_Portrait_%28crop%29.png"
+====
+src:"/assets/img/narendra-modi.7d86d5c9278f.png"
+>>>>
+
+@@ app.js
+<<<<
+const WM="https://upload.wikimedia.org/wikipedia/commons/thumb/";
+====
+>>>>
+
+@@ app.js
+<<<<
+dec.issues=dec.issues.filter(id=>ISS[id]);if(!dec.ans||typeof dec.ans!=="object")dec.ans={};
+====
+dec.issues=[...new Set(dec.issues.filter(id=>typeof id==="string"&&ISS[id]))].slice(0,4);if(!dec.ans||typeof dec.ans!=="object"||Array.isArray(dec.ans))dec.ans={};
+dec.step=Number.isInteger(dec.step)&&dec.step>=0?dec.step:0;
+Object.keys(dec.ans).forEach(k=>{if(!ISS[k]||typeof dec.ans[k]!=="string")delete dec.ans[k]});
+>>>>
+
+@@ app.js
+<<<<
+    const total=is.length+ps.length+ns.length+ms.length;
+====
+    const ext=XT().search?XT().search(q,lq,hl):{n:0,html:""};
+    const total=is.length+ps.length+ns.length+ms.length+ext.n;
+>>>>
+
+@@ app.js
+<<<<
+      +(total?"":`<p class="empty">Nothing found.
+====
+      +ext.html
+      +(total?"":`<p class="empty">Nothing found.
+>>>>
+
+@@ app.js
+<<<<
+<input id="sq" type="search" value="${esc(q)}" placeholder="Search promises, schemes or issues" aria-label="Search">
+====
+<input id="sq" type="search" maxlength="80" value="${esc(q)}" placeholder="Search promises, schemes, issues or a state" aria-label="Search">
+>>>>
+
+@@ app.js
+<<<<
+  if(ALIAS[h]!=null)h=ALIAS[h];
+====
+  if(h.length>200)h=h.slice(0,200);
+  if(Object.prototype.hasOwnProperty.call(ALIAS,h))h=ALIAS[h];
+>>>>
+
+@@ app.js
+<<<<
+function render(focus){
+  const app=$("#app");
+====
+/* One broken page must never leave a blank screen: any error while drawing a page shows a way out instead. */
+function render(focus){
+  try{renderPage(focus)}
+  catch(err){
+    if(window.PPD_GUARD)window.PPD_GUARD.report(err,"render "+route);
+    $("#app").innerHTML=`<div class="wrap page narrow ppd-fallback" style="margin-inline:auto" role="alert"><div class="card ppd-fb">${XT().art?XT().art("oops"):""}<h1 tabindex="-1" id="flowh">This page didn't load properly</h1><p class="muted">Nothing is lost. Your saved choices are still on this device.</p><div class="ctas"><a class="btn btn-p" href="#home">Go to home</a><button class="btn btn-g" data-ppd-reload="1">Reload</button></div><p class="small muted">Still stuck? <button class="linkbtn" data-ppd-reset="1">Reset what this site saved on this device</button> and start fresh.</p></div></div>`;
+    document.title="Something went wrong "+String.fromCharCode(183)+" SarkarDekho";
+  }
+}
+function renderPage(focus){
+  const app=$("#app");
+>>>>
+
+@@ app.js
+<<<<
+const XR=r=>(XT().routes||{})[r];
+====
+const XR=r=>{const o=XT().routes;return o&&Object.prototype.hasOwnProperty.call(o,r)?o[r]:undefined};
+>>>>
+
+# The first page is drawn by v4/start.js once every module has loaded.
+@@ app.js
+<<<<
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+====
+window.PPD.boot=boot;
+>>>>

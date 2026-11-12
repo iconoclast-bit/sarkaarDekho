@@ -1,0 +1,65 @@
+# state.js (Delhi) and v2/states.js (other states): lookup tables without a prototype, and saved
+# "Help me decide" answers checked before use.
+
+@@ state.js
+<<<<
+const DI=Object.fromEntries(DISSUES.map(i=>[i.id,i]));
+====
+const DI=Object.assign(Object.create(null),Object.fromEntries(DISSUES.map(i=>[i.id,i])));
+>>>>
+
+@@ state.js
+<<<<
+const IT={};
+====
+const IT=Object.create(null);
+>>>>
+
+@@ state.js
+<<<<
+ddec.issues=ddec.issues.filter(id=>DI[id]);if(!ddec.ans)ddec.ans={};
+====
+ddec.issues=[...new Set(ddec.issues.filter(id=>typeof id==="string"&&DI[id]))].slice(0,4);if(!ddec.ans||typeof ddec.ans!=="object"||Array.isArray(ddec.ans))ddec.ans={};
+ddec.step=Number.isInteger(ddec.step)&&ddec.step>=0?ddec.step:0;
+Object.keys(ddec.ans).forEach(k=>{if(!DI[k]||typeof ddec.ans[k]!=="string")delete ddec.ans[k]});
+>>>>
+
+@@ v2/states.js
+<<<<
+const MI=Object.fromEntries(MS.map(m=>[m.id,m]));
+====
+const MI=Object.assign(Object.create(null),Object.fromEntries(MS.map(m=>[m.id,m])));
+>>>>
+
+@@ v2/states.js
+<<<<
+  const IT={};
+====
+  const IT=Object.create(null);
+>>>>
+
+@@ v2/states.js
+<<<<
+d.issues=d.issues.filter(id=>M.issues.some(i=>i.id===id));if(!d.ans)d.ans={};DECS[M.code]=d;return d}
+====
+d.issues=[...new Set(d.issues.filter(id=>M.issues.some(i=>i.id===id)))].slice(0,4);if(!d.ans||typeof d.ans!=="object"||Array.isArray(d.ans))d.ans={};
+  d.step=Number.isInteger(d.step)&&d.step>=0?d.step:0;
+  Object.keys(d.ans).forEach(k=>{if(!d.issues.includes(k)||typeof d.ans[k]!=="string")delete d.ans[k]});DECS[M.code]=d;return d}
+>>>>
+
+@@ v2/states.js
+<<<<
+const cur=()=>{const l=getLoc();return l&&l.state&&l.state!=="Delhi"&&SDATA[l.state]?l.state:null};
+====
+const cur=()=>{const l=getLoc();return l&&typeof l.state==="string"&&l.state!=="Delhi"&&Object.prototype.hasOwnProperty.call(SDATA,l.state)?l.state:null};
+>>>>
+
+# My notes shows the state's "Help me decide" answers too.
+@@ v2/states.js
+<<<<
+const dsave=M=>st("pdk_sdec_"+M.code,dec(M));
+====
+const dsave=M=>st("pdk_sdec_"+M.code,dec(M));
+X.stateNotes=()=>{const n=cur();if(!n)return "";const M=model(n),D=dec(M),names=Object.assign(Object.create(null),Object.fromEntries(chs(M)));
+  return `<section class="sec"><div class="sh"><h2>Help me decide: ${esc(M.name)}</h2></div>${D.issues.length?`<div class="card"><ul class="answers">${D.issues.map(id=>`<li><span class="n">${esc(II[id].n)}</span><span>${esc(names[D.ans[id]]||"Not answered")}</span></li>`).join("")}</ul></div>`:`<p class="empty">Not started. <a href="#decide">Start now</a></p>`}</section>`};
+>>>>

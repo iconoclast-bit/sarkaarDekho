@@ -1,0 +1,278 @@
+# voter.js: saved data is checked before use, location lookups share less, the location sheet no longer
+# opens by itself, dated content hides once its date has passed, and My notes covers every scope.
+
+@@ voter.js
+<<<<
+let loc=st("pdk_loc");if(!loc||typeof loc!=="object")loc=null;
+let ops=st("pdk_ops");if(!ops||typeof ops!=="object")ops={};
+let me=st("pdk_me");if(!me||typeof me!=="object")me={};
+====
+/* Everything read back from the browser is treated as untrusted and rebuilt field by field. */
+const str=(v,n)=>typeof v==="string"?v.slice(0,n):"";
+const cleanLoc=l=>{if(!l||typeof l!=="object"||typeof l.state!=="string"||!STATES.includes(l.state))return null;
+  const ac=l.state==="Delhi"&&Number.isInteger(l.ac)&&ACS.some(a=>a[0]===l.ac)?l.ac:null;return {state:l.state,ac}};
+const cleanOps=o=>{const out={};if(!o||typeof o!=="object"||Array.isArray(o))return out;
+  Object.keys(o).slice(0,400).forEach(k=>{const x=o[k];if(k!=="__proto__"&&k.length<=90&&x&&typeof x==="object"&&(x.v===1||x.v===-1)&&typeof x.l==="string")out[k]={v:x.v,l:x.l.slice(0,140),t:+x.t||0}});return out};
+const cleanMe=m=>m&&typeof m==="object"&&!Array.isArray(m)?{ps:str(m.ps,120),part:str(m.part,60)}:{};
+const pick=(v,list)=>list.includes(v)?v:undefined;
+const cleanMv=m=>m&&typeof m==="object"&&!Array.isArray(m)?{cit:pick(m.cit,["yes","no"]),res:pick(m.res,["here","abroad"]),list:pick(m.list,["yes","no","unsure"])}:{};
+const cleanDec=d=>d&&typeof d==="object"&&Array.isArray(d.issues)?{issues:d.issues.filter(x=>typeof x==="string").slice(0,4),ans:d.ans&&typeof d.ans==="object"?d.ans:{}}:{issues:[],ans:{}};
+let loc=cleanLoc(st("pdk_loc"));
+let ops=cleanOps(st("pdk_ops"));
+let me=cleanMe(st("pdk_me"));
+const todayISO=()=>new Date().toISOString().slice(0,10);
+>>>>
+
+@@ voter.js
+<<<<
+  return `<span class="op" data-op="${key}" data-opl=
+====
+  return `<span class="op" data-op="${G().esc(key)}" data-opl=
+>>>>
+
+@@ voter.js
+<<<<
+X.op=op;X.getLoc=()=>loc;X.setLoc=v=>{loc=v;st("pdk_loc",v)};
+====
+X.op=op;X.getLoc=()=>loc;X.setLoc=v=>{loc=cleanLoc(v);st("pdk_loc",loc)};
+>>>>
+
+@@ voter.js
+<<<<
+    <p class="small muted" id="locmsg">Uses your browser's location and BigDataCloud to work out your state. We don't store your location.</p>
+====
+    <p class="small muted" id="locmsg" aria-live="polite">Your browser asks you first. Only a rough position (to about 10 km) goes to BigDataCloud to work out your state, and we never store it.</p>
+>>>>
+
+@@ voter.js
+<<<<
+function openLoc(){closeLoc();document.body.insertAdjacentHTML("beforeend",locSheet());document.body.classList.add("noscroll");const s=document.getElementById("lstate");if(s)s.focus()}
+function closeLoc(){const e=document.getElementById("locsheet");if(e)e.remove();document.body.classList.remove("noscroll")}
+====
+let locOpener=null;
+function openLoc(from){closeLoc();locOpener=from||document.activeElement;document.body.insertAdjacentHTML("beforeend",locSheet());document.body.classList.add("noscroll");const s=document.getElementById("lstate");if(s)s.focus()}
+function closeLoc(){const e=document.getElementById("locsheet");if(e)e.remove();document.body.classList.remove("noscroll");
+  if(e&&locOpener&&document.contains(locOpener))locOpener.focus();locOpener=null}
+function chooseState(s,ac){if(!STATES.includes(s))return;loc=cleanLoc({state:s,ac:ac||null});st("pdk_loc",loc);closeLoc();
+  window.dispatchEvent(new HashChangeEvent("hashchange"));if(X.toast)X.toast("Showing "+s+". You can change this any time.")}
+>>>>
+
+@@ voter.js
+<<<<
+function locate(){const msg=document.getElementById("locmsg");
+---- to
+},()=>{msg.textContent="Location permission was refused. Please choose from the list."},{timeout:10000,maximumAge:600000})}
+====
+/* Works out the state from the device's position. Only a position rounded to one decimal place (about 10 km)
+   leaves the device, the request carries no cookies or referrer, and it gives up after 8 seconds. */
+function locate(){
+  const say=t=>{const m=document.getElementById("locmsg");if(m)m.textContent=t};
+  if(!navigator.geolocation){say("Your browser can't share location. Please choose from the list.");return}
+  say("Finding you"+String.fromCharCode(8230));
+  navigator.geolocation.getCurrentPosition(p=>{
+    const ctl="AbortController" in window?new AbortController():null,timer=setTimeout(()=>{if(ctl)ctl.abort()},8000);
+    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${p.coords.latitude.toFixed(1)}&longitude=${p.coords.longitude.toFixed(1)}&localityLanguage=en`,{signal:ctl?ctl.signal:undefined,credentials:"omit",referrerPolicy:"no-referrer",cache:"no-store"})
+      .then(r=>{if(!r.ok)throw new Error("lookup failed");return r.json()})
+      .then(j=>{
+        const name=String(j&&j.principalSubdivision||"").replace(/^National Capital Territory of /,"");
+        const hit=STATES.find(s=>s.toLowerCase()===name.toLowerCase());
+        if(!j||j.countryCode!=="IN"||!hit){say("We couldn't match your position to a state. Please choose from the list.");return}
+        const sel=document.getElementById("lstate");if(!sel)return;
+        sel.value=hit;sel.dispatchEvent(new Event("change",{bubbles:true}));
+        say("Found: "+hit+". Check it's right, then continue.");
+      })
+      .catch(()=>say("Couldn't look up your state. Please choose from the list."))
+      .then(()=>clearTimeout(timer));
+  },()=>say("Location wasn't shared. Please choose from the list."),{enableHighAccuracy:false,timeout:10000,maximumAge:600000})}
+>>>>
+
+@@ voter.js
+<<<<
+  if(!loc||!loc.state)return `<section class="wrap you"><div class="card youbar">
+---- to
+data-locopen="1">Choose location</button></div></section>`;
+====
+  if(!loc||!loc.state)return `<section class="wrap you"><div class="card youbar youpick">${X.art?X.art("pin"):""}<div><b id="hstl">Where do you vote?</b><span class="muted small">Pick your state to see its parties, its governments and its next election. Saved only on this device.</span></div><div class="youform"><select id="hstate" aria-labelledby="hstl"><option value="">Choose your state</option>${STATES.map(s=>`<option>${G().esc(s)}</option>`).join("")}</select><button class="btn btn-g btn-s" data-locopen="1" data-autolocate="1">Use my location</button></div></div></section>`;
+>>>>
+
+@@ voter.js
+<<<<
+const remBtn=e=>e.date?`<button class="btn btn-g btn-s" data-ics="${e.k}">Add reminder</button>`:"";
+====
+/* A reminder is offered only while its date is still ahead. */
+const remBtn=(e,label)=>e&&e.date&&e.date>=todayISO()?`<button class="btn btn-g btn-s" data-ics="${e.k}">${label||"Add reminder"}</button>`:"";
+>>>>
+
+@@ voter.js
+<<<<
+`Detailed coverage of ${G().esc(loc.state)} is coming. Below is Delhi. You can search any candidate on ${ds("myneta")}.`}</span></div>`}
+====
+`We list every MLA for Delhi only so far. For ${G().esc(loc.state)}, use the links below.`}</span></div>`}
+    ${loc&&!isDelhi()?(()=>{const sn=X.stateNext?X.stateNext(loc.state):null;return `<section class="sec"><div class="sh"><h2>Your representatives in ${G().esc(loc.state)}</h2></div><div class="links">
+      ${sn?`<div class="card"><b>${G().esc(sn.cm)}</b><span>Chief Minister, ${G().esc(sn.now)}. <a href="#compare">See how ${G().esc(loc.state)} did under each government</a></span></div>`:""}
+      <a class="card" href="${DS.myneta.u}" target="_blank" rel="noopener noreferrer"><b>Find your MLA and MP on MyNeta</b><span>Choose your state and seat to see each candidate's declared cases, assets and education.</span></a>
+      <a class="card" href="${DS.esr.u}" target="_blank" rel="noopener noreferrer"><b>Find your constituency</b><span>The Election Commission's search shows your assembly seat and polling station.</span></a></div></section>`})():""}
+>>>>
+
+@@ voter.js
+<<<<
+<input id="nq" type="search" placeholder="Search a name or seat"
+====
+<input id="nq" type="search" maxlength="60" placeholder="Search a name or seat"
+>>>>
+
+@@ voter.js
+<<<<
+let mv=st("pdk_mv");if(!mv||typeof mv!=="object")mv={};
+====
+let mv=cleanMv(st("pdk_mv"));
+>>>>
+
+@@ voter.js
+<<<<
+  if(r.list==="yes")return `<div class="card verdict2 good"><h3>You're eligible. Make sure you're still on the list</h3><p>
+---- to
+You can appeal to the District Election Officer within 15 days. ${ds("sirf")}</p>${saveBox()}</div>`;
+====
+  if(r.list==="yes"){const dl=isDelhi()||!loc;
+    return `<div class="card verdict2 good"><h3>You're eligible. Make sure you're still on the list</h3>
+      ${dl?`<p>Delhi's voter list is being revised: the draft (31 Aug 2026) left out 47.7 lakh of 1.45 crore names. Claims and objections close on 25 November 2026 and the final list is due on 22 December 2026. ${srcs(["sird","sirx"])}</p>`:`<p>Names can drop off a voter list when it is revised, so search for yours before every election.</p>`}
+      <div class="ctas"><a class="btn btn-p btn-s" href="${DS.esr.u}" target="_blank" rel="noopener noreferrer">Check my name</a>${dl?remBtn(DELX.find(d=>d.k==="roll"),"Remind me on 22 Dec"):""}</div>
+      ${dl?`<p class="small muted">Missing from the final list? You can appeal to the District Election Officer within 15 days. ${ds("sirf")}</p>`:""}${saveBox()}</div>`}
+>>>>
+
+@@ voter.js
+<<<<
+<input id="mps" value="
+====
+<input id="mps" maxlength="120" autocomplete="off" value="
+>>>>
+
+@@ voter.js
+<<<<
+<input id="mpart" value="
+====
+<input id="mpart" maxlength="60" autocomplete="off" value="
+>>>>
+
+@@ voter.js
+<<<<
+  const g=G(),dec=st("pdk3_dec")||{issues:[],ans:{}},keys=Object.keys(ops);
+====
+  const g=G(),dec=cleanDec(st("pdk3_dec")),keys=Object.keys(ops);
+>>>>
+
+@@ voter.js
+<<<<
+  const nm={upa:g.SL.upa,
+====
+  const nm={__proto__:null,upa:g.SL.upa,
+>>>>
+
+@@ voter.js
+<<<<
+<p class="intro">Everything you've marked, kept only in this browser. Nobody else can see it.</p></div>
+====
+<p class="intro">Everything you've marked, kept only in this browser. It is never sent to us or anyone else.</p></div>
+    ${X.stateNotes?X.stateNotes():""}
+>>>>
+
+@@ voter.js
+<<<<
+    ${(()=>{const dd=st("pdk_ddec")||{issues:[],ans:{}},DN={inc:"Congress",
+====
+    ${(()=>{const dd=cleanDec(st("pdk_ddec")),DN={__proto__:null,inc:"Congress",
+>>>>
+
+@@ voter.js
+<<<<
+return `<section class="sec"><div class="sh"><h2>Help me decide: Delhi</h2></div>
+====
+if(!isDelhi()&&!dd.issues.length)return "";return `<section class="sec"><div class="sh"><h2>Help me decide: Delhi</h2></div>
+>>>>
+
+@@ voter.js
+<<<<
+    <div class="ctas"><button class="btn btn-g" data-notesdl="1">Download my notes</button><button class="btn btn-g" data-notesclr="1">Clear all</button></div>
+====
+    <div class="ctas"><button class="btn btn-g" data-notesdl="1">Download my notes</button></div>
+    ${X.privacyBox?X.privacyBox():""}
+>>>>
+
+@@ voter.js
+<<<<
+const canStore=(()=>{try{localStorage.setItem("pdk_t","1");localStorage.removeItem("pdk_t");return true}catch(e){return false}})();
+X.boot=()=>{if(canStore&&!loc&&!st("pdk_locskip")&&(location.hash===""||location.hash==="#home"))openLoc()};
+====
+/* The location sheet never opens by itself: a first-time visitor picks a state from the card at the top of the home page. */
+X.boot=()=>{};
+>>>>
+
+@@ voter.js
+<<<<
+  if(t.closest("[data-locopen]")){e.preventDefault();openLoc();return}
+  if(t.closest("[data-locclose]")||t.id==="locsheet"){closeLoc();if(!loc)st("pdk_locskip",1);return}
+====
+  const lo=t.closest("[data-locopen]");if(lo){e.preventDefault();openLoc(lo);if(lo.dataset.autolocate)locate();return}
+  if(t.closest("[data-locclose]")||t.id==="locsheet"){closeLoc();return}
+>>>>
+
+@@ voter.js
+<<<<
+    const ac=s==="Delhi"?document.getElementById("lac").value:"";loc={state:s,ac:ac?+ac:null};st("pdk_loc",loc);closeLoc();window.dispatchEvent(new HashChangeEvent("hashchange"));return}
+====
+    const ac=s==="Delhi"?document.getElementById("lac").value:"";chooseState(s,ac?+ac:null);return}
+>>>>
+
+@@ voter.js
+<<<<
+  if(t.closest("[data-mesave]")){me={ps:document.getElementById("mps").value.trim(),part:document.getElementById("mpart").value.trim()};
+====
+  if(t.closest("[data-mesave]")){me=cleanMe({ps:document.getElementById("mps").value.trim(),part:document.getElementById("mpart").value.trim()});
+>>>>
+
+@@ voter.js
+<<<<
+a.download="my-voting-notes.json";document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),300);return}
+  if(t.closest("[data-notesclr]")){ops={};me={};mv={};st("pdk_ops",ops);st("pdk_me",me);st("pdk_mv",mv);window.dispatchEvent(new HashChangeEvent("hashchange"));return}
+====
+a.download="my-voting-notes.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);return}
+>>>>
+
+@@ voter.js
+<<<<
+document.addEventListener("change",e=>{const t=e.target;
+====
+document.addEventListener("change",e=>{const t=e.target;
+  if(t.id==="hstate"){if(t.value)chooseState(t.value,null);return}
+>>>>
+
+@@ voter.js
+<<<<
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&document.getElementById("locsheet")){closeLoc();if(!loc)st("pdk_locskip",1)}});
+====
+/* While the location sheet is open, Escape closes it and Tab stays inside it. */
+document.addEventListener("keydown",e=>{const sh=document.getElementById("locsheet");if(!sh)return;
+  if(e.key==="Escape"){closeLoc();return}
+  if(e.key!=="Tab")return;
+  const f=[...sh.querySelectorAll("button,select,input,a[href]")].filter(x=>!x.disabled&&x.offsetParent!==null);if(!f.length)return;
+  const first=f[0],last=f[f.length-1],at=document.activeElement;
+  if(!sh.contains(at)||(!e.shiftKey&&at===last)){e.preventDefault();first.focus()}
+  else if(e.shiftKey&&at===first){e.preventDefault();last.focus()}});
+>>>>
+
+# My notes lists marks made on state pages too, and hides empty blocks that don't apply to the reader's location.
+@@ voter.js
+<<<<
+  const grp=[["m:","Country-wide measures"],["dp:","Delhi promises"],["dm:","Delhi's numbers"],["loc:","Local problems"]];
+====
+  const dl=isDelhi(),other=!!loc&&!dl;
+  const grp=[["m:","Country-wide measures",true],["sp:","State promises",other],["sm:","State numbers",other],["dp:","Delhi promises",dl],["dm:","Delhi's numbers",dl],["loc:","Local problems",dl]];
+>>>>
+
+@@ voter.js
+<<<<
+    ${grp.map(([p,h])=>{const ks=keys.filter(k=>k.startsWith(p));return `
+====
+    ${grp.map(([p,h,show])=>{const ks=keys.filter(k=>k.startsWith(p));if(!ks.length&&!show)return "";return `
+>>>>

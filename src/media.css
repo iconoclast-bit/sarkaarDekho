@@ -1,0 +1,67 @@
+/* ---------- images: party symbols, PM portraits ---------- */
+.av{position:relative}
+.av>.avt{color:var(--av-ink);font-size:1em;line-height:1}
+.av>.avi{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;border:2px solid var(--c);border-radius:inherit;padding:12%}
+.av>.avr{position:absolute;right:-7px;bottom:-7px;background:var(--c);color:#fff;font-family:var(--f-head);font-size:11px;font-weight:800;line-height:1;padding:3px 5px;border-radius:6px;border:2px solid var(--surface);letter-spacing:.02em}
+.av.sm>.avr{font-size:9.5px;padding:2px 4px;right:-6px;bottom:-6px}
+.face{position:relative;display:inline-block;flex:none;vertical-align:middle}
+.face>.ph{display:block;width:48px;height:48px;border-radius:50%;overflow:hidden;background:var(--soft);border:3px solid var(--c);position:relative}
+.face>.ph>.pht{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-head);font-weight:800;color:var(--c);font-size:16px}
+.face>.ph>.phi{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;background:var(--soft)}
+.face .av.xs{position:absolute;right:-6px;bottom:-4px;width:24px;height:24px;border-radius:7px;font-size:8px}
+.face .av.xs>.avi{border-width:1.5px;padding:10%}
+.face .av.xs>.avr{font-size:8px;padding:1px 3px;right:-8px;bottom:-6px;border-width:1.5px}
+.face.lgf>.ph{width:72px;height:72px}
+.face.lgf .av.xs{width:30px;height:30px}
+.face.xl>.ph{width:92px;height:92px;border-width:4px}
+.face.xl .av.xs{width:36px;height:36px;border-radius:9px;right:-4px}
+.face.xl .av.xs>.avr{font-size:10px;padding:2px 4px}
+img.lg{display:inline-block;width:22px;height:22px;object-fit:contain;background:#fff;border:1px solid var(--rule2);border-radius:6px;padding:2px;vertical-align:-6px;margin-right:6px}
+.side .k img.lg{width:18px;height:18px;vertical-align:-4px;margin-right:5px}
+.choice .chl img.lg{width:34px;height:34px;margin:0;border-radius:8px;padding:3px}
+.vs-side .face{margin-bottom:2px}
+.gcard .top{gap:14px}
+.gcard .top .badge-live{margin-left:6px;vertical-align:2px}
+/* hero: copy, finder, then the duel strip */
+.hero-in{grid-template-areas:"copy finder" "extra finder";align-items:center;row-gap:22px}
+.hero-copy{grid-area:copy;align-self:end}
+.hero-in>.finder{grid-area:finder}
+.hero-extra{grid-area:extra;display:grid;gap:18px;align-self:start;min-width:0}
+@media (max-width:900px){.hero-in{grid-template-areas:"copy" "finder" "extra"}}
+.duel{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.duel-vs{align-self:center;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-family:var(--f-head);font-weight:800;font-size:13px}
+.duel-card{display:flex;gap:14px;align-items:center;padding:14px;border-radius:14px;background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--c);text-decoration:none;min-width:0}
+.duel-card .face>.ph{width:68px;height:68px}
+.duel-card .face .av.xs{width:28px;height:28px}
+.duel-t{display:grid;gap:2px;min-width:0}
+.duel-t>b{font-family:var(--f-head);font-size:17px;line-height:1.2}
+.duel-t>span{font-size:13px;color:var(--muted)}
+.duel-t .duel-k{color:var(--ink);font-size:13.5px}
+.duel-t .duel-k b{font-family:var(--f-head);font-size:18px}
+@media (max-width:560px){.duel-card{flex-direction:column;text-align:center;padding:12px 8px;gap:8px}.duel-t>b{font-size:15.5px}.duel-vs{width:30px;height:30px;font-size:11px}}
+/* head to head */
+.h2h{padding:16px 18px;display:grid;gap:16px}
+.h2h-rows{display:grid;gap:14px}
+.h2h-row{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr) minmax(110px,auto);gap:16px;align-items:center}
+.h2h-who{display:flex;gap:12px;align-items:center;text-decoration:none;min-width:0}
+.h2h-who b{display:block;font-family:var(--f-head);font-size:16px;line-height:1.2}
+.h2h-who small{display:block;color:var(--muted);font-size:13px}
+.h2h-track{height:18px;background:var(--sunk);border-radius:9px;overflow:hidden}
+.h2h-track i{display:block;height:100%;width:0;background:var(--c);border-radius:9px;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.h2h-v{display:grid;justify-items:start;gap:2px}
+.h2h-v b{font-family:var(--f-head);font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.h2h-v small{color:var(--muted);font-size:12.5px}
+@media (max-width:700px){.h2h{padding:14px}.h2h-row{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}.h2h-track{grid-column:1/-1;grid-row:2}.h2h-v{justify-items:end;text-align:right}}
+/* motion and touch feedback */
+.sbar i{transform-origin:left center;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
+.sbar:not(.in) i{transform:scaleX(0)}
+.vs,.tile,.gcard,.duel-card,.h2h-who .face,.tile .ic,.choice,.pick{transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+@media (hover:hover){
+  .vs:hover,.tile:hover,.gcard:hover,.duel-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--rule2)}
+  .tile:hover .ic{transform:scale(1.08) rotate(-3deg)}
+  .h2h-who:hover .face{transform:scale(1.05)}
+}
+.vs:active,.tile:active,.gcard:active,.duel-card:active,.choice:active,.pick:active{transform:scale(.98)}
+@media (prefers-reduced-motion:reduce){.sbar:not(.in) i{transform:none}.h2h-track i{transition:none}.vs,.tile,.gcard,.duel-card{transition:none}}
+@media (max-width:760px){.dhead .face.xl>.ph{width:72px;height:72px;border-width:3px}.dhead .face.xl .av.xs{width:30px;height:30px}}
+@media (max-width:600px){table.ct thead .face{display:none}}

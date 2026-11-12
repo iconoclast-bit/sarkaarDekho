@@ -1,0 +1,32 @@
+# delhi.js: the Election Commission moved Delhi's final voter list from 4 November to 22 December 2026
+# (announced 30 October 2026).
+
+@@ delhi.js
+<<<<
+ sirf:{t:"CEO Delhi: FAQ on Special Intensive Revision 2026",u:"https://ceodelhi.gov.in/PDFFolders/2026/FAQ_SIR2026.pdf"},
+====
+ sirf:{t:"CEO Delhi: FAQ on Special Intensive Revision 2026",u:"https://ceodelhi.gov.in/PDFFolders/2026/FAQ_SIR2026.pdf"},
+ sirx:{t:"Outlook: ECI revises SIR timelines in Delhi, Maharashtra and four other states (30 Oct 2026)",u:"https://www.outlookindia.com/national/eci-revises-sir-timelines-in-delhi-maharashtra-four-other-states"},
+>>>>
+
+@@ delhi.js
+<<<<
+when:"4 Nov 2026",date:"2026-11-04",last:"Draft list (31 Aug 2026) left out 47.7 lakh of 1.45 crore names.",go:"#myvote",cta:"Check you're on it",src:"sird"},
+====
+when:"22 Dec 2026",date:"2026-12-22",last:"Draft list (31 Aug 2026) left out 47.7 lakh of 1.45 crore names. Claims and objections close on 25 Nov 2026.",go:"#myvote",cta:"Check you're on it",src:"sirx"},
+>>>>
+
+@@ delhi.js
+<<<<
+s:"People left out can file Form 6. The final list is due on 4 November 2026.",src:"sird"},
+====
+s:"People left out can file Form 6. The final list, first due on 4 November 2026, is now due on 22 December 2026.",src:"sird"},
+>>>>
+
+@@ delhi.js
+<<<<
+const DNEWS=[
+====
+const DNEWS=[
+ {d:"30 Oct 2026",t:"Election Commission extends Delhi's voter-list revision: final list now due on 22 December",s:"Claims and objections can be filed until 25 November 2026. The final list was earlier due on 4 November.",src:"sirx"},
+>>>>

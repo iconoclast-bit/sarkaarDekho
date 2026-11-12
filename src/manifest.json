@@ -1,0 +1,16 @@
+{
+  "name": "SarkarDekho",
+  "short_name": "SarkarDekho",
+  "description": "Compare India's parties before you vote: promises, delivery and sourced numbers, side by side.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#4a2d8f",
+  "lang": "en",
+  "icons": [
+    { "src": "%ICON192%", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "%ICON512%", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

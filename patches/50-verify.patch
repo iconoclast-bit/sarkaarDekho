@@ -1,0 +1,22 @@
+# v3/verify.js: findings are searchable, the home strip's button is styled, and the strip sits below "how it works".
+
+@@ v3/verify.js
+<<<<
+const FID=Object.fromEntries(FIND.map(f=>[f.id,f]));
+====
+X.findings=FIND;
+>>>>
+
+@@ v3/verify.js
+<<<<
+<a class="btn btn-s" href="#audits">See audit findings</a>
+====
+<a class="btn btn-o btn-s" href="#audits">See audit findings</a>
+>>>>
+
+@@ v3/verify.js
+<<<<
+  const a=document.querySelector("#app .hero")||document.querySelector("#app > section");if(!a)return;
+====
+  const a=document.getElementById("ppd-how")||document.querySelector("#app .hero")||document.querySelector("#app > section");if(!a)return;
+>>>>

@@ -1,0 +1,142 @@
+# Per-route meta description, Open Graph and Twitter Card updates, kept next to the existing
+# per-route <title> logic so the two can never drift apart.
+
+@@ app.js
+<<<<
+const TITLES={home:"SarkarDekho: compare before you vote",decide:"Help me decide",issues:"Browse by issue",compare:"Compare governments",promises:"Promise tracker",charts:"Charts",manifesto:"2024 manifestos",about:"Method and sources",search:"Search"};
+====
+const TITLES={home:"SarkarDekho: compare before you vote",decide:"Help me decide",issues:"Browse by issue",compare:"Compare governments",promises:"Promise tracker",charts:"Charts",manifesto:"2024 manifestos",about:"Method and sources",search:"Search"};
+const DESCS={
+  home:"Compare India's parties before you vote: what each government promised and delivered at the Centre and in every state, side by side. Every claim is sourced, and independent audit findings are shown next to official numbers.",
+  decide:"Pick the issues that matter most to you and see, side by side, how each side's record and promises line up. No score, no ranking — just your own answers.",
+  issues:"Browse India's parties by issue: healthcare, jobs, farming, the economy and more — what each side did in power, and what they promise next.",
+  compare:"Compare any two or three governments at the Centre since 2004: promises kept, economic and social numbers, side by side, with every figure sourced.",
+  promises:"Every measurable manifesto promise from the Centre's governments since 2004, checked against its own target and deadline.",
+  charts:"India's key numbers from 2004 to today, charted year by year, with each government's time in power shaded for comparison.",
+  manifesto:"What the Congress-led UPA and BJP-led NDA promised in their 2024 manifestos, issue by issue, sourced from the documents themselves.",
+  about:"How SarkarDekho sources its numbers, what it includes and leaves out, and where the data is weak. Not affiliated with any party.",
+  search:"Search promises, schemes, issues and states across SarkarDekho."
+};
+function seo(t,d,home){
+  const full=home?t:t+" · SarkarDekho";
+  const byName=n=>document.querySelector(`meta[name="${n}"]`),byProp=n=>document.querySelector(`meta[property="${n}"]`);
+  let el=byName("description");if(el)el.content=d;
+  el=byProp("og:title");if(el)el.content=full;
+  el=byProp("og:description");if(el)el.content=d;
+  el=byProp("og:url");if(el)el.content=location.href;
+  el=byName("twitter:title");if(el)el.content=full;
+  el=byName("twitter:description");if(el)el.content=d;
+}
+>>>>
+
+<<<<
+  const t=OV&&OV.t?OV.t:route==="issue"?ISS[arg].n:route==="gov"?ITEMS[arg].name+", "+ITEMS[arg].span:TITLES[route]||XR(route).t;
+  document.title=route==="home"&&!OV?t:t+" · SarkarDekho";
+====
+  const t=OV&&OV.t?OV.t:route==="issue"?ISS[arg].n:route==="gov"?ITEMS[arg].name+", "+ITEMS[arg].span:TITLES[route]||XR(route).t;
+  const home=route==="home"&&!OV;
+  document.title=home?t:t+" · SarkarDekho";
+  const d=OV&&OV.d?OV.d:route==="issue"?(ISS[arg].d?ISS[arg].d+" Compared across governments, every figure sourced.":DESCS.issues):route==="gov"?`${ITEMS[arg].name} (${ITEMS[arg].span}): promises made, what was delivered, and the sources behind each figure.`:DESCS[route]||(XR(route)||{}).d||DESCS.home;
+  seo(t,d,home);
+>>>>
+
+@@ voter.js
+<<<<
+X.routes={
+  elections:{v:vElections,t:"Elections",nav:"elections"},
+  "delhi-local":{v:vLocal,t:"Local: MCD",nav:"elections"},
+  netas:{v:vNetas,t:"Check your netas",nav:"netas"},
+  myvote:{v:vMyVote,t:"How do I vote?",nav:"myvote"},
+  mynotes:{v:vMyNotes,t:"My notes",nav:"myvote"}
+};
+====
+X.routes={
+  elections:{v:vElections,t:"Elections",nav:"elections",d:"Lok Sabha, state assembly and municipal elections: when they happen, what happened last time, and how to decide."},
+  "delhi-local":{v:vLocal,t:"Local: MCD",nav:"elections",d:"The Municipal Corporation of Delhi: your ward councillor, civic services, and the next MCD election."},
+  netas:{v:vNetas,t:"Check your netas",nav:"netas",d:"Find your MP and MLA, and their sworn records on MyNeta: criminal cases, assets, liabilities and education, as declared."},
+  myvote:{v:vMyVote,t:"How do I vote?",nav:"myvote",d:"Check you're eligible, get on the voter list, and know what to carry. Everything stays on this device."},
+  mynotes:{v:vMyNotes,t:"My notes",nav:"myvote",d:"Everything you've marked while deciding, kept only in this browser. Nobody else can see it."}
+};
+>>>>
+
+@@ v3/verify.js
+<<<<
+X.routes.audits={v:viewAudits,t:"Audit findings",nav:"audits"};
+====
+X.routes.audits={v:viewAudits,t:"Audit findings",nav:"audits",d:"Independent checks on the government's own numbers: CAG audits and serious disputes over the official data, set beside what's officially claimed."};
+>>>>
+
+@@ v4/ux.js
+<<<<
+X.routes.privacy={v:viewPrivacy,t:"Privacy and security",nav:"about"};
+====
+X.routes.privacy={v:viewPrivacy,t:"Privacy and security",nav:"about",d:"What this site saves, where it's saved (only on your device), and how to erase it or forget everything when you close the tab."};
+>>>>
+
+@@ state.js
+<<<<
+const OVR={home:[sHome,"Delhi: compare before you vote"],issues:[sIssues,"Delhi: browse by issue"],compare:[sCompare,"Compare Delhi's governments"],promises:[sPromises,"Delhi promise tracker"],charts:[sCharts,"How did Delhi do?"],manifesto:[sManifesto,"Delhi 2025 manifestos"],decide:[sDecide,"Help me decide: Delhi"]};
+X.view=(route)=>scope()==="state"&&OVR[route]?{v:OVR[route][0],t:OVR[route][1]}:null;
+====
+const OVR={
+  home:[sHome,"Delhi: compare before you vote","Compare Delhi's parties before you vote: what each government promised and delivered since 1993, side by side, every figure sourced."],
+  issues:[sIssues,"Delhi: browse by issue","Browse Delhi's parties by issue: what each did in power, and what they promise now."],
+  compare:[sCompare,"Compare Delhi's governments","Compare any two or three of Delhi's governments: promises kept and key numbers, side by side."],
+  promises:[sPromises,"Delhi promise tracker","Measurable manifesto promises from Delhi's governments, checked against their own target and deadline."],
+  charts:[sCharts,"How did Delhi do?","Delhi's key numbers over time, charted with each government's time in power shaded for comparison."],
+  manifesto:[sManifesto,"Delhi 2025 manifestos","What every party promised Delhi's voters in the 2025 election, issue by issue, sourced from the manifestos."],
+  decide:[sDecide,"Help me decide: Delhi","Pick the issues that matter most to you in Delhi and see how each party's record and promises line up."]
+};
+X.view=(route)=>scope()==="state"&&OVR[route]?{v:OVR[route][0],t:OVR[route][1],d:OVR[route][2]}:null;
+>>>>
+
+<<<<
+Object.assign(X.routes,{
+  dissue:{v:()=>sIssue(curArg()),t:"Delhi issue",nav:"issues"},
+  dgov:{v:()=>sGov(curArg()),t:"Delhi government",nav:"compare"},
+  dcompare:{v:()=>{const ids=curArg().split("-").filter(id=>IT[id]);if(ids.length>=2){dcmp=[...new Set(ids)].slice(0,3);st("pdk_dcmp",dcmp)}return sCompare()},t:"Compare Delhi's governments",nav:"compare"},
+  delhi:{v:()=>{if(!hasState()&&X.setLoc)X.setLoc({state:"Delhi",ac:null});setScope("state");go("#home");return ""},t:"Delhi",nav:"home"},
+  india:{v:()=>{setScope("centre");go("#home");return ""},t:"India",nav:"home"}
+});
+====
+Object.assign(X.routes,{
+  dissue:{v:()=>sIssue(curArg()),t:"Delhi issue",nav:"issues",d:"What this Delhi party did on this issue, and what it promises now, with sources."},
+  dgov:{v:()=>sGov(curArg()),t:"Delhi government",nav:"compare",d:"This Delhi government's time in power: promises made, what was delivered, and the sources behind each figure."},
+  dcompare:{v:()=>{const ids=curArg().split("-").filter(id=>IT[id]);if(ids.length>=2){dcmp=[...new Set(ids)].slice(0,3);st("pdk_dcmp",dcmp)}return sCompare()},t:"Compare Delhi's governments",nav:"compare",d:"Promise records and Delhi's numbers for the governments you picked, lined up side by side."},
+  delhi:{v:()=>{if(!hasState()&&X.setLoc)X.setLoc({state:"Delhi",ac:null});setScope("state");go("#home");return ""},t:"Delhi",nav:"home",d:"Compare Delhi's parties before you vote."},
+  india:{v:()=>{setScope("centre");go("#home");return ""},t:"India",nav:"home",d:"Compare India's parties before you vote."}
+});
+>>>>
+
+@@ v2/states.js
+<<<<
+const OVR={home:[sHome,n=>`${n}: compare before you vote`],issues:[sIssues,n=>`${n}: browse by issue`],compare:[sCompare,n=>`Compare ${n}'s governments`],promises:[sPromises,n=>`${n} promise tracker`],charts:[sCharts,n=>`How did ${n} do?`],manifesto:[sManifesto,n=>`${n} manifestos`],decide:[sDecide,n=>`Help me decide: ${n}`]};
+const prevView=X.view;
+X.view=(route,arg)=>{const v=prevView?prevView(route,arg):null;if(v)return v;if(scope()==="state"&&OVR[route]){const n=cur();return {v:OVR[route][0],t:OVR[route][1](n)}}return null};
+====
+const OVR={
+  home:[sHome,n=>`${n}: compare before you vote`,n=>`Compare ${n}'s parties before you vote: what each government promised and delivered, side by side, every figure sourced.`],
+  issues:[sIssues,n=>`${n}: browse by issue`,n=>`Browse ${n}'s parties by issue: what each did in power, and what they promise now.`],
+  compare:[sCompare,n=>`Compare ${n}'s governments`,n=>`Compare any two or three of ${n}'s governments: promises kept and key numbers, side by side.`],
+  promises:[sPromises,n=>`${n} promise tracker`,n=>`Measurable manifesto promises from ${n}'s governments, checked against their own target and deadline.`],
+  charts:[sCharts,n=>`How did ${n} do?`,n=>`${n}'s key numbers over time, charted with each government's time in power shaded for comparison.`],
+  manifesto:[sManifesto,n=>`${n} manifestos`,n=>`What the parties promised ${n}'s voters, issue by issue, sourced from the manifestos themselves.`],
+  decide:[sDecide,n=>`Help me decide: ${n}`,n=>`Pick the issues that matter most to you in ${n} and see how each party's record and promises line up.`]
+};
+const prevView=X.view;
+X.view=(route,arg)=>{const v=prevView?prevView(route,arg):null;if(v)return v;if(scope()==="state"&&OVR[route]){const n=cur();return {v:OVR[route][0],t:OVR[route][1](n),d:OVR[route][2]?OVR[route][2](n):null}}return null};
+>>>>
+
+<<<<
+Object.assign(X.routes,{
+  sissue:{v:need(()=>sIssue(curArg())),t:"State issue",nav:"issues"},
+  sgov:{v:need(()=>sGov(curArg())),t:"State government",nav:"compare"},
+  scompare:{v:need(()=>{const M=model(cur());const ids=curArg().split("~").filter(id=>M.IT[id]);if(ids.length>=2)setCmp(M,[...new Set(ids)].slice(0,3));return sCompare()}),t:"Compare governments",nav:"compare"}
+});
+====
+Object.assign(X.routes,{
+  sissue:{v:need(()=>sIssue(curArg())),t:"State issue",nav:"issues",d:"What this party or government did on this issue, and what it promises now, with sources."},
+  sgov:{v:need(()=>sGov(curArg())),t:"State government",nav:"compare",d:"This party's time in power: promises made, what was delivered, and the sources behind each figure."},
+  scompare:{v:need(()=>{const M=model(cur());const ids=curArg().split("~").filter(id=>M.IT[id]);if(ids.length>=2)setCmp(M,[...new Set(ids)].slice(0,3));return sCompare()}),t:"Compare governments",nav:"compare",d:"Promise records and key numbers for the governments you picked, lined up side by side."}
+});
+>>>>

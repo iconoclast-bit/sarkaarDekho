@@ -9,10 +9,10 @@ import { applyPatches } from "./tools/patch.mjs";
 
 const require = createRequire(import.meta.url);
 const SRC = "src", OUT = "dist";
-const SITE = "https://sarkardekho.vercel.app";
+const SITE = "https://sarkaardekho.vercel.app";
 // The sha256 (base64) of the structured-data <script> block's exact text in index.html, matching
 // the script-src hash in vercel.json. Recomputed and checked in step 6 below.
-const JSONLD_SHA256 = "iCJSOTHS43m61IHAPbd8vnljHst2CdcMGBDooRZ0tY8=";
+const JSONLD_SHA256 = "A7khnpocwkx9rJ6nv86Skv5iZX3KifMMcDv1xFoKmWk=";
 
 // Order matters: data first, then the app, then each layer that extends it, then the starter.
 const JS = ["data.js", "delhi.js", "app.js", "voter.js", "state.js",
@@ -104,7 +104,7 @@ for (const [name, ext, path, pin] of IMAGES) {
   const file = `${name}.${pin.slice(0, 12)}.${ext}`;
   if (!appJs.includes(`/assets/img/${file}`)) fail(`the app does not reference /assets/img/${file}`);
   try {
-    const res = await fetch(WM + path, { headers: { "User-Agent": "SarkarDekhoBuild/2.0 (https://sarkardekho.vercel.app)" }, signal: AbortSignal.timeout(15000) });
+    const res = await fetch(WM + path, { headers: { "User-Agent": "SarkarDekhoBuild/2.0 (https://sarkaardekho.vercel.app)" }, signal: AbortSignal.timeout(15000) });
     if (!res.ok) throw new Error("HTTP " + res.status);
     const buf = Buffer.from(await res.arrayBuffer());
     if (sha(buf, "sha1", "hex") !== pin) throw new Error("fingerprint mismatch");

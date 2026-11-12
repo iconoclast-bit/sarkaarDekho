@@ -8,7 +8,7 @@
     {
       "src": "/(.*)",
       "headers": {
-        "Content-Security-Policy": "default-src 'none'; script-src 'self' 'sha256-iCJSOTHS43m61IHAPbd8vnljHst2CdcMGBDooRZ0tY8='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.bigdatacloud.net; manifest-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests",
+        "Content-Security-Policy": "default-src 'none'; script-src 'self' 'sha256-A7khnpocwkx9rJ6nv86Skv5iZX3KifMMcDv1xFoKmWk='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.bigdatacloud.net; manifest-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests",
         "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
